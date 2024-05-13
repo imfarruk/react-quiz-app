@@ -7,15 +7,15 @@ import { FaUser, FaPhoneAlt, FaGoogle } from "react-icons/fa";
 import { IoPush } from "react-icons/io5";
 import { toast } from 'react-toastify';
 
-// firebase
-import { app } from '../firebase/firebase';
-import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 
 //image import
 import googleIcon from "../assets/images/google.png";
 import facebookIcon from "../assets/images/facebook.png";
 import loginImg from '../assets/images/quiz4.webp'
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { signupWithEmailPwd, userSignInWIthGoogleThirdParty } from '../store/actions/authAction';
+import { createUserWithEmailAndPassword,getAuth } from 'firebase/auth';
+import { app } from '../firebase/firebase';
 
 // firebase important
 const auth = getAuth(app);
@@ -26,15 +26,21 @@ const Signup = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
+    const dispatch = useDispatch()
 
     const signupWithEmail = () => {
         createUserWithEmailAndPassword(auth,
             email, password).then((value) => {
                 toast.success('signup success', value);
+                
                 setEmail("");
                 setPassword("");
-                navigate('/')
+                navigate('/profile')
             }).catch((error) => { toast.error(error.code) })
+   
+        //    const res = signupWithEmailPwd(email,password).then((data)=>{
+    //      console.log(data,'dataa');
+    //     })
 
     }
 
@@ -44,9 +50,13 @@ const Signup = () => {
         }
     }, [])
 
+const signInWIthGoogle = () =>{
+    userSignInWIthGoogleThirdParty()
+}
+    
     return (
         <>
-            <Box sx={{ background: `url(${googleIcon} cover)`, margin: '30px 20px', }}>
+            <Box sx={{ background: `url(${googleIcon} cover)`, padding: '30px 20px', }}>
                 <Container sx={{ display: 'flex', justifyContent: 'center' }}>
                     <Grid container mx={3} item xs={12} md={8} sm={10} sx={{ minHeight: '430px', background: '#fff', display: 'flex', alignSelf: 'center', borderRadius: '40px' }}>
                         <Grid item xs={12} sm={5} sx={{ background: 'brown', borderRadius: '40px' }}>
@@ -79,7 +89,7 @@ const Signup = () => {
                                 <Box sx={{ textAlign: 'center' }}>
                                     <Typography>you can also login through third party</Typography>
                                     <Box sx={{ p: 3, display: 'flex', gap: 2 }}>
-                                        <Button>
+                                        <Button onClick={signInWIthGoogle}>
                                             <img src={googleIcon} alt="google" width="40px" />
                                         </Button>
                                         <Button>

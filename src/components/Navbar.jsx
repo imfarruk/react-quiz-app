@@ -165,7 +165,14 @@ const Navbar = () => {
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
-                 <Link to='/profile'>
+                {user.email === 'imfarruk@gmail.com' && (
+                <Link to="/create-quiz" style={{textDecoration:'none',color:'inherit'}}>
+                <MenuItem  onClick={handleCloseUserMenu}>
+                    <Typography textAlign="center" >Create Quiz</Typography>
+                  </MenuItem>
+                  </Link>
+                   )}
+                 <Link to='/profile' style={{textDecoration:'none',color:'inherit'}}>
                   <MenuItem  onClick={handleCloseUserMenu}>
                     <Typography textAlign="center" >Profile</Typography>
                   </MenuItem>
@@ -219,7 +226,11 @@ const Navbar = () => {
               <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                { !user ? (
                   <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                  ):(
+                  <Avatar alt="Remy Sharp" src={user.photoURL} />
+                  )}
                 </IconButton>
               </Tooltip>
               <Menu
@@ -238,7 +249,14 @@ const Navbar = () => {
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
-              <Link to='/profile'>
+                {user.email === 'imfarruk@gmail.com' && (
+                <Link to="/create-quiz" style={{textDecoration:'none',color:'inherit'}}>
+                <MenuItem  onClick={handleCloseUserMenu}>
+                    <Typography textAlign="center" >Create Quiz</Typography>
+                  </MenuItem>
+                  </Link>
+                   )}
+              <Link to='/profile' style={{textDecoration:'none',color:'inherit'}}>
                   <MenuItem  onClick={handleCloseUserMenu}>
                     <Typography textAlign="center" >Profile</Typography>
                   </MenuItem>

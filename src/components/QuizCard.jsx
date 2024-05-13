@@ -36,7 +36,7 @@ const initialError = {
     optionB: false,
     correctOption: false,
 }
-const QuizCard = ({ createQuiz, ...props }) => {
+const QuizCard = ({ createQuizInfo, ...props }) => {
     const [option, setOption] = useState(false);
     const [errors, setErrors] = useState(initialError);
     const [dbFile, setDbFile] = useState(quiz);
@@ -72,14 +72,14 @@ const QuizCard = ({ createQuiz, ...props }) => {
         const validationErrors = validateForm(quizValue);
         if (Object.keys(validationErrors).length === 0) {
             const { subject, level, question, optionA, optionB, optionC, optionD, correctOption } = quizValue;
-                const data = {
+                const datass = {
                     subject, level, question, optionA, optionB, optionC, optionD, correctOption
                 }
-               dispatch(createQuizQuestion(data)).then(()=>{
+               dispatch(createQuizQuestion(datass)).then(()=>{
                 setQuizValue({subject:"", level:"", question:"", optionA:"", optionB:"", optionC:"", optionD:"", correctOption:""})
                 toast.success('created successfully')
                 clearForm();
-                createQuiz(false)
+                createQuizInfo(false)
             });
            
           } else {
@@ -87,6 +87,7 @@ const QuizCard = ({ createQuiz, ...props }) => {
             setSubmitting(false);
           }
     }
+
 
 
     const validateForm = (data) => {
@@ -119,7 +120,6 @@ const QuizCard = ({ createQuiz, ...props }) => {
         setSubmitting(false);
       };
 
-    console.log(errors, 'errors -2');
     return (
         <Box sx={{ ...homeCenter, p: 2 }}>
             <Container maxWidth='lg' sx={{ background: '#fff', display: 'flex', gap: 3, p: 2, borderRadius: '20px' }}>
@@ -217,4 +217,4 @@ const QuizCard = ({ createQuiz, ...props }) => {
 }
 
 // export default QuizCard
-export default connect(createQuizQuestion)(QuizCard);
+export default QuizCard;

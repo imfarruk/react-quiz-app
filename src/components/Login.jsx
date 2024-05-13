@@ -12,7 +12,7 @@ import { getAuth, signInWithEmailAndPassword,GoogleAuthProvider,signInWithPopup 
 import { app } from '../firebase/firebase';
 
 // redux 
-import { userLogin } from "../store/actions/authAction";
+import { userLogin, userSignInWIthGoogleThirdParty } from "../store/actions/authAction";
 import { LOGIN, LOGOUT, USER_LOADED } from "../store/actions/index";
 
 
@@ -56,23 +56,29 @@ const Login = (props) => {
         });
     }
 
-    const userSignInWIthGoogle = () =>{
-        signInWithPopup(auth,provider).then((result) => {
-            const credential = GoogleAuthProvider.credentialFromResult(result);
-            // console.log(result,'34',credential);
-            dispatch({
-                type: LOGIN,
-                payload: result.user,
-            });
-            const token = credential.accessToken;
-            const user = result.user.providerData[0];
-            toast.success('login')
-            navigate('/')
-            // ...
-          }).catch((error) => {
-            toast.error(error.code)
+    // const userSignInWIthGoogle = () =>{
+    //     signInWithPopup(auth,provider).then((result) => {
+    //         const credential = GoogleAuthProvider.credentialFromResult(result);
+    //         // console.log(result,'34',credential);
+    //         dispatch({
+    //             type: LOGIN,
+    //             payload: result.user,
+    //         });
+    //         const token = credential.accessToken;
+    //         const user = result.user.providerData[0];
+    //         toast.success('login')
+    //         navigate('/')
+    //         // ...
+    //       }).catch((error) => {
+    //         toast.error(error.code)
          
-          });
+    //       });
+    // }
+    const userSignInWIthGoogle = () =>{
+         const res = dispatch(userSignInWIthGoogleThirdParty())
+         console.log(res,'res'
+         );
+
     }
 
 
@@ -114,7 +120,7 @@ const Login = (props) => {
                                 </Box>
                                 <Divider />
                                 <Typography sx={{ textAlign: 'center' }}>------------ or ------------</Typography>
-                                <Box>
+                                 <Box>
                                     <Typography>you can also login through third party</Typography>
                                     <Box sx={{ p: 3, display: 'flex', gap: 2 }}>
                                         <Button onClick={userSignInWIthGoogle}>

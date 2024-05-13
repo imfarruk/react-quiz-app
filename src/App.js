@@ -1,5 +1,3 @@
-
-import './App.css';
 import { useEffect } from 'react';
 import {getDatabase, ref, set} from "firebase/database";
 import {app} from './firebase/firebase';
@@ -11,7 +9,7 @@ import {Provider, useDispatch} from "react-redux";
 import { loadUser } from "./store/actions/authAction";
 
 import {Routes,Route} from 'react-router-dom';
-import {Box} from '@mui/material'
+import {Box, Paper} from '@mui/material'
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -26,6 +24,8 @@ import CreateQuiz from './components/CreateQuiz';
 import QuizSubCard from './components/QuizSubCard';
 import Profile from './components/Profile';
 import {readSubjectWiseQuiz} from "./store/actions/createQuiz"
+import EditQuizCard from './components/editQuizCard';
+import EditProfile from './components/EditProfile';
 
 
 
@@ -42,7 +42,9 @@ function App() {
       <PersistGate loading={null} persistor={Persistor}>
     <Navbar/>
    
-    <Box sx={{
+    <Paper 
+        variant='square' 
+        sx={{
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
@@ -50,16 +52,19 @@ function App() {
         background:'#E2AD8D'
       }}>
       <Routes>
-        <Route exact path='/' element={<Home/>}/>
+        <Route exact path='/' element={<Home/>}/> 
         <Route exact path='/signup' element={<Signup/>}/>
         <Route exact path='/login' element={<Login/>}/>
         <Route exact path='/quiz' element={<Quiz/>}/>
         <Route exact path='/create-quiz' element={<CreateQuiz/>}/>
         <Route exact path='/quiz-test/:sub' element={<QuizSubCard/>}/>
         <Route exact path='/profile' element={<Profile/>}/>
+        <Route exact path="/edit-quiz/:id" element={<EditQuizCard/>}/>
+        <Route exact path="/edit-profile" element={<EditProfile/>}/>
       </Routes>
+     
        {/* <div><button onClick={putData}>Put data</button></div> */}
-    </Box>
+    </Paper>
     <ToastContainer/>
     </PersistGate>
     </Provider>
