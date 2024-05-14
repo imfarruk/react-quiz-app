@@ -19,8 +19,7 @@ const initialState = {};
 //   let persistor = persistStore(store)
 //   return { store, persistor }
 // }
-const store = createStore(persistedReducer, initialState,compose(
-  applyMiddleware(thunk)))
+const store = createStore(persistedReducer, initialState, applyMiddleware(thunk))
 const Persistor = persistStore(store)
 
 export {Persistor};

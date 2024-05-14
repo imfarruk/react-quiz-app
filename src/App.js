@@ -30,6 +30,7 @@ import EditProfile from './components/EditProfile';
 
 
 function App() {
+  
   useEffect(()=>{
     store.dispatch(loadUser());
     store.dispatch(readSubjectWiseQuiz());

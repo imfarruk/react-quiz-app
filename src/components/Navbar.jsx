@@ -62,7 +62,7 @@ const Navbar = () => {
     }
     return (
         <>
-        <AppBar position="static" sx={{height:'120px',display:'flex',alignItems:'center'}}>
+        <AppBar position="static" sx={{height:'20vh',display:'flex',alignItems:'center'}}>
       <Container maxWidth="xl" sx={{margin:'auto'}}>
         <Toolbar disableGutters>
           <Box  sx={{ flexGrow: 1,textAlign:'center',justifyContent:'center', display: { xs: 'flex', md: 'none' } }}>

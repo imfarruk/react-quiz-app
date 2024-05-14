@@ -10,7 +10,7 @@ const Home = () => {
   return (
     <>
 
-      <Box sx={{ ...homeCenter,flexDirection:'column', background: "#fff",p:3,minHeight:"calc(100vh-120px)" }}>
+      <Box sx={{ ...homeCenter,flexDirection:'column', background: "#fff",p:3 }}>
         <Box sx={{ px: { xs: 3, sm: 2 } }}>
           <img src={homeImg} alt="home" width="100%" />
         </Box>

@@ -121,7 +121,7 @@ const QuizCard = ({ createQuizInfo, ...props }) => {
       };
 
     return (
-        <Box sx={{ ...homeCenter, p: 2 }}>
+        <Box sx={{ ...homeCenter,  }}>
             <Container maxWidth='lg' sx={{ background: '#fff', display: 'flex', gap: 3, p: 2, borderRadius: '20px' }}>
 
                 <Grid container spacing={2} sx={{ p: 2, gap: 2 }}>
@@ -177,7 +177,7 @@ const QuizCard = ({ createQuizInfo, ...props }) => {
                                     </TextField>
                             </Grid>
                             <Grid item xs={12} sm={12} md={12} mt={2}>
-                                <TextField error={Boolean(errors.question)} helperText={errors.question && "Question required"} id="standard-error-helper-text" fullWidth size="small" value={quizValue.question} name="question" onChange={changeValue} label="Question" variant="outlined" />
+                                <TextField error={Boolean(errors.question)} helperText={errors.question && "Question required"} id="standard-error-helper-text" multiline fullWidth size="small" value={quizValue.question} name="question" onChange={changeValue} label="Question" variant="outlined" />
                             </Grid>
                             <Grid item xs={12} sm={6} mt={2}>
                                 <TextField error={Boolean(errors.optionA)} helperText={errors.optionA && "Option A required"} fullWidth size="small" value={quizValue.optionA} name="optionA" onChange={changeValue} label="Option A" variant="outlined" />

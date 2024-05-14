@@ -8,5 +8,5 @@ export const homeCenter = {
     display:'flex',
     justifyContent:'center',
     alignItems:'center',
-    // minHeight:"calc(100vh-120px)",
+    minHeight:"80vh",
 }

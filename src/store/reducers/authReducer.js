@@ -11,17 +11,13 @@ const authReducer = (state = initialState,action)=>{
     const { type, payload } = action;
     switch (type) {
         case LOGIN:
-            console.log(payload,'payload',payload);
-            // const data={payload.providerData
-
-            // }
-          localStorage.setItem("quizAppToken", payload.accessToken);
-        //   localStorage.setItem("quizUser", payload.user._id);
+          console.log(payload,'payload');
+          localStorage.setItem("quizAppToken", payload.token);
           return {
             ...state,
             isAuthenticated: true,
             loading: false,
-            user: payload.providerData[0],
+            user: payload,
           };
         case LOGOUT:
           localStorage.removeItem("quizAppToken");
@@ -33,13 +29,12 @@ const authReducer = (state = initialState,action)=>{
             user: null,
           };
           case USER_LOADED:
-
             return {
               ...state,
-              isAuthenticated: payload.accessToken ? true : false,
+              isAuthenticated: payload.token ? true : false,
               loading: false,
-              token:payload.accessToken,
-              user:payload.providerData[0]
+              token:payload.token,
+              user:payload
             };
           default:
             return state;

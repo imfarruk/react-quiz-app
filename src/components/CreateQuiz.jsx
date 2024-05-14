@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, Grid, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 
 import { homeCenter } from "../constant/style";
 import { BsPlusSquareFill } from "react-icons/bs";
 import QuizCard from "./QuizCard";
-import QuizViewCard from "./quizViewCard";
-import { quiz } from "../constant/db";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -16,7 +14,6 @@ const CreateQuiz = () => {
 
   const authentication = useSelector((state) => state.auth);
   const { isAuthenticated, loading } = authentication;
-  console.log(authentication, "authhhh");
   const [createQuiz, setCreateQuiz] = useState(false);
 
   const createQuizes = () => {
@@ -29,6 +26,7 @@ const CreateQuiz = () => {
     }
   });
   return (
+    <>
     <Box sx={{ ...homeCenter, p:2,flexDirection: "column" }}>
       <Typography variant="h5">Create more quizes</Typography>
       <Button
@@ -42,24 +40,11 @@ const CreateQuiz = () => {
       <Box sx={{ mt: 2 }}>
         {createQuiz && <QuizCard createQuizInfo={setCreateQuiz} />}
       </Box>
-
-      {/* <Box sx={{ width: "100%" }}>
-        <Grid container spacing={2}>
-          {quiz.length > 0 &&
-            quiz.map((currVal, i) => {
-              return (
-                <Grid xs={12} sm={6} md={4}>
-                  <QuizViewCard quiz={currVal} key={i} />
-                </Grid>
-              );
-            })}
-        </Grid>
-      </Box> */}
-
+      </Box>
     <Box sx={{ width: "100%" }}>
        <Quiz isEditable={true}/>
     </Box>
-    </Box>
+    </>
   );
 };
 
