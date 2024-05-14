@@ -12,7 +12,7 @@ import {
   createUserWithEmailAndPassword,
 } from "firebase/auth";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { getFirestore, getDoc, doc, setDoc } from "firebase/firestore";
+import { getFirestore, getDoc, doc, setDoc, getDocs, collection } from "firebase/firestore";
 
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
@@ -195,7 +195,22 @@ export const uploadProfilePhoto = async (file, value,id) =>  {
 };
 
 export const userDetails = async (id) => {
+  let resArray=[]
   const docRef = await doc(firestore, userDB, id);
+  // const docRef2 = await doc(firestore, `${userDB}/${id}`,'userResult');
   const result = await getDoc(docRef);
-  return result.data();
+  // const result2 = await getDoc(docRef2);
+  const querySnapshot = await getDocs(collection(firestore, userDB, id, "userResult"));
+querySnapshot.forEach((doc) => {
+  // doc.data() is never undefined for query doc snapshots
+  resArray.push(doc.data())
+  console.log( doc.data());
+})
+let val= result.data()
+let data = {
+  ...val,
+  userResult:resArray
+}
+  console.log(result,docRef,'redddd',resArray,data);
+  return data;
 };
