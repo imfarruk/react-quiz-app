@@ -1,3 +1,8 @@
+# You can check this project on netlify.
+link is below tap link to have a look on this project
+ Netlify : https://imfarruk-quizapp.netlify.app/
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
