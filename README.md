@@ -1,5 +1,5 @@
 # You can check this project on netlify.
-link is below tap link to have a look on this project
+# Link is below tap link to have a look on this project
  Netlify : https://imfarruk-quizapp.netlify.app/
 
 
