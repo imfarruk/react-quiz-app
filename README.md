@@ -1,6 +1,6 @@
 # You can check this project on netlify.
-# Link is below tap link to have a look on this project
- Netlify : https://imfarruk-quizapp.netlify.app/
+ Link is below tap link to have a look of this project
+# Netlify : https://imfarruk-quizapp.netlify.app/
 
 
 # Getting Started with Create React App
