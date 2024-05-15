@@ -5,10 +5,12 @@ import {
   Button,
   Container,
   Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
   DialogTitle,
-  FormControl,
   Grid,
-  List,
+  LinearProgress,
   MenuItem,
   MobileStepper,
   Modal,
@@ -17,11 +19,12 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { homeCenter } from "../constant/style";
-import reactImg from "../assets/images/mind.jpg";
-import { FaHourglassStart } from "react-icons/fa";
 import { MdNotStarted } from "react-icons/md";
-import { quizSubjects, readQuizQuestion, saveResultTodb } from "../store/actions/createQuiz";
+import {
+  quizSubjects,
+  readQuizQuestion,
+  saveResultTodb,
+} from "../store/actions/createQuiz";
 import { useDispatch, useSelector } from "react-redux";
 import { styled, useTheme } from "@mui/material/styles";
 import {
@@ -34,87 +37,28 @@ import { toast } from "react-toastify";
 import { useTimer } from "react-timer-hook";
 import { GrPowerReset } from "react-icons/gr";
 import { CiSaveDown1 } from "react-icons/ci";
-import {app} from "../firebase/firebase";
-import { getAuth } from "firebase/auth";
 
-const auth = getAuth(app);
 
-export const CardInfo = ({ curVal, counts }) => {
-  const navigate = useNavigate();
-  const openQuizTest = (valId) => {
-    navigate(`/quiz-test/${valId}`);
-  };
 
-  let newVal = counts.filter((vval) => vval === curVal);
-
-  return (
-    <>
-      <Paper sx={{ m: 1, p: 2 }}>
-        <Box
-          sx={{
-            display: "flex",
-            gap: 3,
-            justifyContent: "center",
-            flexDirection: "column",
-          }}
-        >
-          <Typography variant="h5" sx={{ textTransform: "capitalize" }}>
-            {curVal}
-          </Typography>
-          <Typography>
-            <img src={reactImg} width="100%" height="100%" alt="react-img" />
-          </Typography>
-          <Typography>Total question: {newVal.length}</Typography>
-          <Button
-            variant="outlined"
-            onClick={() => openQuizTest(curVal)}
-            endIcon={<FaHourglassStart />}
-          >
-            Click to start
-          </Button>
-        </Box>
-      </Paper>
-    </>
-  );
-};
 const initialQuizValue = {
   subject: "reactjs",
   level: "easy",
 };
 
-const MyFormControl = styled(FormControl)`
-    borderRadius: 4,
-    border: '1px solid rgba(0, 0, 0, 0.23)',
-    padding: '8px 12px',
-    width: '100%',
-    '& .MuiFormControlLabel-root': {
-      marginLeft: 0,
-    },
-    '& .MuiRadio-root': {
-      padding: 0,
-      '&:hover': {
-        backgroundColor: 'transparent',
-      },
-`;
-const TextFieldStyled = styled("input")({
-  textShadow: " 0 0 #000000",
-});
 
-const BoxModel = styled(Box)({
+
+const BoxModel = styled(Paper)({
   position: "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
   background: "#fff",
-  borderRadius: "12px",
-  boxShadow: 24,
   padding: "20px",
 });
 
 const Quiz = ({ isEditable }) => {
   const theme = useTheme();
-  const {isAuthenticated} = useSelector(state=>state.auth)
-  const [quizVal, setQuizVal] = useState([]);
+  const { isAuthenticated } = useSelector((state) => state.auth);
   const [quizValue, setQuizValue] = useState(initialQuizValue);
   const [quizSelcVal, setQuizSelcVal] = useState({ subject: "", level: "" });
   const [subjectQuestion, setSubjectQuestion] = useState([]);
@@ -123,36 +67,32 @@ const Quiz = ({ isEditable }) => {
   const [totalAttempt, setTotalAttempt] = useState(0);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
-  const [subLoading,setSubLoading] = useState(true)
+  const [subLoading, setSubLoading] = useState(true);
   const [selectedValue, setSelectedValue] = useState("");
   const [resultPer, setResultPer] = useState(0);
   const [optionSelect, setOptionSelect] = useState("");
   const [open, setOpen] = React.useState(false);
   const [openResultButton, setOpenResultButton] = useState(false);
-  const [allSubjects,setAllSubjects] = useState()
-  const [dialogOpen,setDialogOpen] = useState(false)
+  const [allSubjects, setAllSubjects] = useState();
+  const [dialogOpen, setDialogOpen] = useState(false);
 
+  const expiryTimestamp = 60;
   const navigate = useNavigate();
   const handleClose = () => setOpen(false);
   const easy = 40;
   const medium = 35;
   const hard = 30;
-  const {
-    seconds,
-    minutes,
-    start,
-    pause,
-    resume,
-    restart,
-  } = useTimer();
+  const { seconds, minutes, start, pause, resume, restart } = useTimer({
+    expiryTimestamp,
+    onExpire: () => {},
+  });
 
-  useEffect(()=>{
-    const res = quizSubjects().then((res)=>{
-      setAllSubjects(res)
-      setSubLoading(false)
-    })
-   
-  },[])
+  useEffect(() => {
+    const res = quizSubjects().then((res) => {
+      setAllSubjects(res);
+      setSubLoading(false);
+    });
+  }, []);
 
   const handleChange = (event) => {
     setSelectedValue(event.target.value);
@@ -175,9 +115,7 @@ const Quiz = ({ isEditable }) => {
   };
 
   const showQuestion = async (e) => {
-   dispatch(
-      readQuizQuestion(quizValue.subject, quizValue.level)
-    )
+    dispatch(readQuizQuestion(quizValue.subject, quizValue.level))
       .then((data) => {
         setQuizSelcVal({ subject: quizValue.subject, level: quizValue.level });
         let newValId = data.map((datas) => {
@@ -222,25 +160,21 @@ const Quiz = ({ isEditable }) => {
 
   const resetQuiz = () => {
     const time = new Date();
-    quizValue.level === 'easy' && ( time.setSeconds(time.getSeconds() + 2))
-    
-    quizValue.level === 'medium' && ( time.setSeconds(time.getSeconds() + medium))
-  
-    quizValue.level === 'hard' && ( time.setSeconds(time.getSeconds() + hard))
+    quizValue.level === "easy" && time.setSeconds(time.getSeconds() + easy);
+
+    quizValue.level === "medium" && time.setSeconds(time.getSeconds() + medium);
+
+    quizValue.level === "hard" && time.setSeconds(time.getSeconds() + hard);
 
     restart(time);
   };
 
-
-  seconds === 0 && activeStep !== maxSteps-1 && !isEditable && (
-    handleNext()
-  )
-  useEffect(()=>{
-    if(seconds === 0 && activeStep === maxSteps-1 && !isEditable){
-      setOpenResultButton(true)
-      console.log('click');
+  seconds === 0 && activeStep !== maxSteps - 1 && !isEditable && handleNext();
+  useEffect(() => {
+    if (seconds === 0 && activeStep === maxSteps - 1 && !isEditable) {
+      setOpenResultButton(true);
     }
-  },[seconds])
+  }, [seconds]);
 
   const handleOpen = () => {
     setOpen(true);
@@ -257,60 +191,62 @@ const Quiz = ({ isEditable }) => {
     setOptionSelect("");
     setOpenResultButton(false);
     setOpen(false);
-    resetQuiz()
+    resetQuiz();
   };
 
   const editQuiz = (value) => {
     navigate(`/edit-quiz/${value}`);
   };
 
-  const resultSaveToDB =()=>{
-    if(!isAuthenticated){
-      setDialogOpen(!dialogOpen)
-      toast.error('First login to save your result')
-    }else{
+  const resultSaveToDB = () => {
+    if (!isAuthenticated) {
+      setDialogOpen(!dialogOpen);
+      toast.error("First login to save your result");
+    } else {
       const data = {
         totalQuestion: maxSteps,
         totalAttempt: totalAttempt,
         correctAnswer: correctCount,
         wrongAnswer: wrongCount,
         markPercentage: resultPer,
-        subject:quizValue.subject,
+        subject: quizValue.subject,
         level: quizValue.level,
-        date:Date.now(),
-      }
-      console.log(data,'data');
-      localStorage.setItem('unsavedQuizResult',JSON.stringify(data))
-      saveResultTodb().then((res)=>{
-        toast.success(res);
-      }).catch(error=>toast.error(error.message))
+        date: Date.now(),
+      };
+      localStorage.setItem("unsavedQuizResult", JSON.stringify(data));
+      saveResultTodb()
+        .then((res) => {
+          toast.success(res);
+          handleClose();
+          againSolve();
+        })
+        .catch((error) => toast.error(error.message));
     }
-  }
+  };
 
-  const handleDialogClose = ()=>{
+  const handleDialogClose = () => {
     setDialogOpen(!dialogOpen);
-    
-    localStorage.removeItem('unsavedQuizResult')
-  }
 
-  const loginForSaveResult = ()=>{
+    localStorage.removeItem("unsavedQuizResult");
+  };
+
+  const loginForSaveResult = () => {
     const data = {
       totalQuestion: maxSteps,
       totalAttempt: totalAttempt,
       correctAnswer: correctCount,
       wrongAnswer: wrongCount,
       markPercentage: resultPer,
-      subject:quizValue.subject,
+      subject: quizValue.subject,
       level: quizValue.level,
-      date:Date.now(),
-    }
-    console.log(data,'data');
-    localStorage.setItem('unsavedQuizResult',JSON.stringify(data))
-    navigate('/login')
-  }
+      date: Date.now(),
+    };
+    localStorage.setItem("unsavedQuizResult", JSON.stringify(data));
+    navigate("/login");
+  };
   return (
-    <Box sx={{ ...homeCenter,p:2 }}>
-      <Stack sx={{  width: "100%" }}>
+    <Box sx={{ p: 2 }}>
+      <Stack sx={{ width: "100%" }}>
         <Box>
           <Typography
             variant="h4"
@@ -319,95 +255,108 @@ const Quiz = ({ isEditable }) => {
             {!isEditable ? "Subject wise quizes" : "All Quizes"}
           </Typography>
         </Box>
-
-        <Container
-          maxWidth="lg"
-          sx={{
-            background: "#fff",
-            display: "flex",
-            gap: 3,
-            p: 2,
-            borderRadius: "20px",
-            mt: 2,
-          }}
-        >
-          <Grid container spacing={2} sx={{ p: 2, gap: 2 }}>
-            <Grid item xs={12} sm={12} md={12} sx={{ m: 2 }}>
-              <Grid container alignItems="center" spacing={1}>
-                <Grid item xs={12} sm={6} md={9} mt={2}>
-                
-                  <TextField
-                    id="outlined-select-subject"
-                    select
-                    fullWidth
-                    label="Select subject"
-                    size="small"
-                    defaultValue="reactjs"
-                    name="subject"
-                    onChange={changeValue}
-                  >
-                    { !subLoading &&
-                      allSubjects.map((sub,i)=>{
-                        return (
-                          <MenuItem key={i} value={sub.subject}>{sub.title}</MenuItem>
-                        )
-                      })
-                    }
-                  </TextField>
-                </Grid>
-                <Grid item xs={12} sm={6} md={3} mt={2}>
-                 
-                  <TextField
-                    id="outlined-select-level"
-                    select
-                    fullWidth
-                    label="Quiz level"
-                    size="small"
-                    defaultValue="easy"
-                    name="level"
-                    onChange={changeValue}
-                  >
-                    <MenuItem value="easy">Easy</MenuItem>
-                    <MenuItem value="medium">Medium</MenuItem>
-                    <MenuItem value="hard">Hard</MenuItem>
-                  </TextField>
-                </Grid>
-                <Grid item xs={12} mt={2} sx={{ textAlign: "start" }}>
-                  <Button
-                    onClick={showQuestion}
-                    variant="contained"
-                    endIcon={<MdNotStarted />}
-                  >
-                    Start Test
-                  </Button>
+        {!subLoading && (
+          <Container
+            maxWidth="lg"
+            sx={{
+              display: "flex",
+              gap: 3,
+              borderRadius: "20px",
+              mt: 2,
+            }}
+          >
+            <Paper square elevation={20} sx={{ width: "100%" }}>
+              <Grid container spacing={2} sx={{ p: 2, gap: 2 }}>
+                <Grid item xs={12} sm={12} md={12} sx={{ m: 2 }}>
+                  <Grid container alignItems="center" spacing={1}>
+                    <Grid item xs={12} sm={6} md={9} mt={2}>
+                      <TextField
+                        id="outlined-select-subject"
+                        select
+                        fullWidth
+                        label="Select subject"
+                        size="small"
+                        defaultValue="reactjs"
+                        name="subject"
+                        onChange={changeValue}
+                      >
+                        {!subLoading &&
+                          allSubjects.map((sub, i) => {
+                            return (
+                              <MenuItem key={i} value={sub.subject}>
+                                {sub.title}
+                              </MenuItem>
+                            );
+                          })}
+                      </TextField>
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={3} mt={2}>
+                      <TextField
+                        id="outlined-select-level"
+                        select
+                        fullWidth
+                        label="Quiz level"
+                        size="small"
+                        defaultValue="easy"
+                        name="level"
+                        onChange={changeValue}
+                      >
+                        <MenuItem value="easy">Easy</MenuItem>
+                        <MenuItem value="medium">Medium</MenuItem>
+                        <MenuItem value="hard">Hard</MenuItem>
+                      </TextField>
+                    </Grid>
+                    <Grid item xs={12} mt={2} sx={{ textAlign: "start" }}>
+                      <Button
+                        onClick={showQuestion}
+                        variant="contained"
+                        endIcon={<MdNotStarted />}
+                      >
+                        Start Test
+                      </Button>
+                    </Grid>
+                  </Grid>
                 </Grid>
               </Grid>
+            </Paper>
+          </Container>
+        )}
+        {subLoading && (
+          <Container maxWidth="lg">
+            <Grid item xs={12} p={2}>
+              <Paper sx={{ p: 2, mt: 1 }} elevation={20}>
+                <Typography sx={{ fontSize: 18, mt: 2 }}>
+                  Loading ...
+                </Typography>
+                <LinearProgress sx={{ mt: 2, mb: 1 }} />
+              </Paper>
             </Grid>
-          </Grid>
-        </Container>
-
+          </Container>
+        )}
         <Box sx={{ mt: 5 }}>
           {!loading && subjectQuestion.length > 0 && (
-          
-            <Box sx={{ ...homeCenter }}>
-              <Container
-                maxWidth="lg"
-                sx={{
-                  background: "#fff",
-                  display: "flex",
-                  gap: 3,
-                  borderRadius: "20px",
-                }}
-              >
+            <Container
+              maxWidth="lg"
+              sx={{
+                display: "flex",
+                gap: 3,
+                pb: 2,
+                borderRadius: "20px",
+              }}
+            >
+              <Paper square elevation={20} sx={{ width: "100%" }}>
                 <Grid container spacing={2} sx={{ p: 2, gap: 2 }}>
                   <Grid item xs={12} sm={12} md={12} sx={{ m: 2 }}>
                     <Grid container alignItems="center" spacing={1}>
-                      {!isEditable && <Grid item xs={12} mt={2}>
-                        <Typography sx={{color:seconds <=5 ? 'red' : 'inherit',
-                        }}>
-                          Time Left : {minutes} : {seconds}
-                        </Typography>
-                      </Grid>}
+                      {!isEditable && (
+                        <Grid item xs={12} mt={2}>
+                          <Typography
+                            sx={{ color: seconds <= 5 ? "red" : "inherit" }}
+                          >
+                            Time Left : {minutes} : {seconds}
+                          </Typography>
+                        </Grid>
+                      )}
                       <Grid item xs={12} mt={2}>
                         <TextField
                           fullWidth
@@ -418,7 +367,6 @@ const Quiz = ({ isEditable }) => {
                           variant="outlined"
                           InputProps={{
                             readOnly: true, // Optionally make the TextField read-only
-                           
                           }}
                         />
                       </Grid>
@@ -447,7 +395,6 @@ const Quiz = ({ isEditable }) => {
                         >
                           {subjectQuestion[activeStep].optionA}
                         </Button>
-                      
                       </Grid>
 
                       <Grid item xs={12} sm={6} mt={2}>
@@ -475,7 +422,6 @@ const Quiz = ({ isEditable }) => {
                           {" "}
                           {subjectQuestion[activeStep].optionB}
                         </Button>
-                       
                       </Grid>
                       {subjectQuestion[activeStep].optionC && (
                         <Grid item xs={12} sm={6} mt={2}>
@@ -503,7 +449,6 @@ const Quiz = ({ isEditable }) => {
                             {" "}
                             {subjectQuestion[activeStep].optionC}
                           </Button>
-                         
                         </Grid>
                       )}
                       {subjectQuestion[activeStep].optionD && (
@@ -532,7 +477,6 @@ const Quiz = ({ isEditable }) => {
                             {" "}
                             {subjectQuestion[activeStep].optionD}
                           </Button>
-                          
                         </Grid>
                       )}
                       {isEditable && (
@@ -545,15 +489,18 @@ const Quiz = ({ isEditable }) => {
                             justifyContent: "space-between",
                           }}
                         >
-                          <Button
-                            fullWidth
-                            variant="outlined"
-                            value={subjectQuestion[activeStep].correctOption}
-                            onClick={optionSelected}
-                          >
-                            {" "}
-                            {subjectQuestion[activeStep].correctOption}
-                          </Button>
+                          <Stack sx={{ width: "100%" }}>
+                            <Typography>Correct Option</Typography>
+                            <Button
+                              fullWidth
+                              variant="outlined"
+                              value={subjectQuestion[activeStep].correctOption}
+                              onClick={optionSelected}
+                            >
+                              {" "}
+                              {subjectQuestion[activeStep].correctOption}
+                            </Button>
+                          </Stack>
                         </Grid>
                       )}
 
@@ -568,7 +515,6 @@ const Quiz = ({ isEditable }) => {
                         }}
                       >
                         <Box>
-                         
                           {openResultButton && (
                             <Button
                               variant="contained"
@@ -602,7 +548,6 @@ const Quiz = ({ isEditable }) => {
                         )}
                       </Grid>
 
-                     
                       <Grid item xs={12}>
                         {isEditable ? (
                           <MobileStepper
@@ -658,34 +603,33 @@ const Quiz = ({ isEditable }) => {
                     </Grid>
                   </Grid>
                 </Grid>
-              </Container>
-            </Box>
+              </Paper>
+            </Container>
           )}
           {loading && subjectQuestion.length === 0 && (
-            <Typography sx={{ textAlign: "center" }}>
+            <Typography sx={{ textAlign: "center", pb: 2 }}>
               Select your preference
             </Typography>
           )}
           {!loading && subjectQuestion.length === 0 && (
             <>
-              <Box sx={{ ...homeCenter }}>
+              <Box sx={{ pb: 2 }}>
                 <Container
                   maxWidth="lg"
                   sx={{
                     py: 5,
-                    background: "#fff",
-                    display: "flex",
-                    borderRadius: "20px",
-                    justifyContent: "center",
+                    p: 2,
                   }}
                 >
-                  <Typography>
-                    Question is not available currently.. Soon{" "}
-                    <span style={{ fontWeight: 600 }}>
-                      {quizSelcVal.subject} {quizSelcVal.level}
-                    </span>{" "}
-                    level question will be added.
-                  </Typography>
+                  <Paper square elevation={20}>
+                    <Typography sx={{ p: 2 }}>
+                      Question is not available currently.. Soon{" "}
+                      <span style={{ fontWeight: 600 }}>
+                        {quizSelcVal.subject} {quizSelcVal.level}
+                      </span>{" "}
+                      level question will be added.
+                    </Typography>
+                  </Paper>
                 </Container>
               </Box>
             </>
@@ -698,7 +642,11 @@ const Quiz = ({ isEditable }) => {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <BoxModel sx={{ minWidth: { xs: "80%", sm: "400px" } }}>
+        <BoxModel
+          sx={{ minWidth: { xs: "80%", sm: "400px" } }}
+          square
+          elevation={20}
+        >
           <Typography id="modal-modal-title" variant="h5" component="h2">
             Result
           </Typography>
@@ -724,23 +672,31 @@ const Quiz = ({ isEditable }) => {
               resultPer >= 40 &&
               "Good, do more exercises for more knowledge."}
           </Typography>
-          <Stack  direction="row" spacing={2} sx={{ float: "inline-end" }}>
-          <Button onClick={againSolve} endIcon={<GrPowerReset/>}>
-            reset
-          </Button>
-          <Button onClick={resultSaveToDB} endIcon={<CiSaveDown1/>}>
-            SAVE RESULT
-          </Button>
+          <Stack direction="row" spacing={2} sx={{ float: "inline-end" }}>
+            <Button onClick={againSolve} endIcon={<GrPowerReset />}>
+              reset
+            </Button>
+            <Button onClick={resultSaveToDB} endIcon={<CiSaveDown1 />}>
+              SAVE RESULT
+            </Button>
           </Stack>
         </BoxModel>
       </Modal>
-      <Dialog onClose={handleDialogClose} open={dialogOpen}>
-        <DialogTitle>Do you want to login ?</DialogTitle>
-        <List sx={{ pt: 0 }}>
-           <Button onClick={loginForSaveResult}>yes</Button>
-           <Button onClick={()=>setDialogOpen(false)}>no</Button>
-          </List>
-        </Dialog>
+      <Dialog square onClose={handleDialogClose} open={dialogOpen}>
+        <Paper square elevation={20}>
+          <DialogTitle>Do you want to login ?</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              After login your data will be saved automatically and you can
+              check your result in future.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={loginForSaveResult}>yes</Button>
+            <Button onClick={() => setDialogOpen(false)}>no</Button>
+          </DialogActions>
+        </Paper>
+      </Dialog>
     </Box>
   );
 };

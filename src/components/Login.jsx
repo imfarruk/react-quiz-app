@@ -158,7 +158,7 @@ const Login = (props) => {
                     fullWidth
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    id="outlined-basic"
+                    id="outlined-basic1"
                     label="email"
                     variant="outlined"
                     InputProps={{

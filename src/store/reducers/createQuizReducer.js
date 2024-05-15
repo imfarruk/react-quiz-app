@@ -1,20 +1,20 @@
-import {CREATE_QUIZ} from '../actions/index';
+import {USER_DETAILS} from '../actions/index';
 
 const initialState={
-    quizData:{},
+    userDetail:{},
     response:"",
-    loading:true
+    userLoading:true
 }
 
  const createQuizReducer =(state =initialState,action)=>{
     const { type, payload } = action;
     switch (type) {
-        case CREATE_QUIZ:
+        case USER_DETAILS:
             console.log(payload,'createttett');
            return {
             ...state,
-            response:payload,
-            loading:false
+            userDetail:payload,
+            userLoading:false
            };
         default:
             return state;

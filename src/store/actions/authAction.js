@@ -1,4 +1,4 @@
-import { LOGIN, LOGOUT, USER_LOADED } from "./index";
+import { LOGIN, LOGOUT, USER_LOADED,USER_DETAILS } from "./index";
 import { toast } from "react-toastify";
 import { app } from "../../firebase/firebase";
 import {
@@ -12,7 +12,14 @@ import {
   createUserWithEmailAndPassword,
 } from "firebase/auth";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { getFirestore, getDoc, doc, setDoc, getDocs, collection } from "firebase/firestore";
+import {
+  getFirestore,
+  getDoc,
+  doc,
+  setDoc,
+  getDocs,
+  collection,
+} from "firebase/firestore";
 
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
@@ -26,7 +33,6 @@ export const userLogin = (userObj) => async (dispatch) => {
   signInWithEmailAndPassword(auth, userObj.email, pwd).then(
     (userCredential) => {
       // Signed in
-      console.log(userCredential, "userCredential");
       dispatch({
         type: LOGIN,
         payload: userCredential.user,
@@ -41,7 +47,6 @@ export const signupWithEmailPwd = (email, password) => {
   createUserWithEmailAndPassword(auth, email, password)
     .then((value) => {
       toast.success("signup success", value);
-      console.log(value, "value");
       return "success";
     })
     .catch((error) => {
@@ -66,7 +71,6 @@ export const logoutUser = () => async (dispatch) => {
 // Load User
 export const loadUser = () => async (dispatch) => {
   onAuthStateChanged(auth, (user) => {
-    console.log(user,'user-action');
     const users = {
       token: user?.accessToken,
       displayName: user?.displayName,
@@ -81,7 +85,7 @@ export const loadUser = () => async (dispatch) => {
         payload: users,
       });
     } else {
-      console.log("user error");
+      console.log("user not found");
     }
   });
 };
@@ -111,12 +115,11 @@ export const userSignInWIthGoogleThirdParty = () => async (dispatch) => {
     });
 };
 
-export const updateUserProfile = async (value,id) => {
+export const updateUserProfile = async (value, id) => {
   // Update other user data like phone no to firestore.
   const userRef = doc(firestore, userDB, id);
   try {
     // Set the document with merge option
-    console.log(value,'update-user',userRef);
     await setDoc(
       userRef,
       {
@@ -124,22 +127,23 @@ export const updateUserProfile = async (value,id) => {
         photoURL: value.photoURL,
         phoneNumber: value.phoneNumber,
         uid: value.uid,
+        role: "user",
+        email: auth.currentUser.email,
       },
       { merge: true }
     );
-    // console.log("User document updated successfully!");
   } catch (error) {
-    // console.error("Error updating user document:", error);
+    toast.error(error.message);
   }
 };
 
-export const uploadProfilePhoto = async (file, value,id) =>  {
+export const uploadProfilePhoto = async (file, value, id) => {
   try {
     // Upload file to Firebase Storage
-    if(file){
+    if (file) {
       const storageRef = ref(storage, `profilePhotos/${id}`);
       await uploadBytes(storageRef, file);
-  
+
       // Get download URL of the uploaded file
       const downloadURL = await getDownloadURL(storageRef);
       await updateProfile(auth.currentUser, {
@@ -148,69 +152,69 @@ export const uploadProfilePhoto = async (file, value,id) =>  {
       });
 
       const userRef = doc(firestore, userDB, auth.currentUser.uid);
-  
+
       // Set the document with merge option
-      await setDoc(userRef, {
-      displayName:auth.currentUser.displayName,
-      photoURL:auth.currentUser.photoURL,
-      phoneNumber:value.phoneNumber,
-      uid:auth.currentUser.uid,
-      }, { merge: true });
-      console.log('User document updated successfully!',);
-    }else{
+      await setDoc(
+        userRef,
+        {
+          displayName: auth.currentUser.displayName,
+          photoURL: auth.currentUser.photoURL,
+          phoneNumber: value.phoneNumber,
+          uid: auth.currentUser.uid,
+          role: value?.role || "user",
+          email: auth.currentUser.email,
+        },
+        { merge: true }
+      );
+    } else {
       await updateProfile(auth.currentUser, {
         displayName: value.displayName,
       });
       const userRef = doc(firestore, userDB, auth.currentUser.uid);
-  
+
       // Set the document with merge option
-      await setDoc(userRef, {
-      displayName:auth.currentUser.displayName,
-      photoURL:auth.currentUser.photoURL,
-      phoneNumber:value.phoneNumber,
-      uid:auth.currentUser.uid,
-      }, { merge: true });
-      console.log('User document updated successfully!',);
-
+      await setDoc(
+        userRef,
+        {
+          displayName: auth.currentUser.displayName,
+          photoURL: auth.currentUser.photoURL,
+          phoneNumber: value.phoneNumber,
+          uid: auth.currentUser.uid,
+          role: value?.role || "user",
+          email: auth.currentUser.email,
+        },
+        { merge: true }
+      );
     }
-    
-    
-    // Update user profile with the image URL
-   
-
-    // const userRef = doc(firestore, userDB, auth.currentUser.uid);
-  
-    //  // Set the document with merge option
-    //  await setDoc(userRef, {
-    //  displayName:auth.currentUser.displayName,
-    //  photoURL:auth.currentUser.photoURL,
-    //  phoneNumber:value.phoneNumber,
-    //  uid:auth.currentUser.uid,
-    //  }, { merge: true });
-    //  console.log('User document updated successfully!',);
-
   } catch (error) {
     return error;
   }
 };
 
-export const userDetails = async (id) => {
-  let resArray=[]
+export const userDetails =(id) => async(dispatch)=>{
+  try{
+  let resArray = [];
   const docRef = await doc(firestore, userDB, id);
-  // const docRef2 = await doc(firestore, `${userDB}/${id}`,'userResult');
   const result = await getDoc(docRef);
-  // const result2 = await getDoc(docRef2);
-  const querySnapshot = await getDocs(collection(firestore, userDB, id, "userResult"));
-querySnapshot.forEach((doc) => {
-  // doc.data() is never undefined for query doc snapshots
-  resArray.push(doc.data())
-  console.log( doc.data());
-})
-let val= result.data()
-let data = {
-  ...val,
-  userResult:resArray
-}
-  console.log(result,docRef,'redddd',resArray,data);
+  const querySnapshot = await getDocs(
+    collection(firestore, userDB, id, "userResult")
+  );
+  querySnapshot.forEach((doc) => {
+    resArray.push(doc.data());
+  });
+  let val = result.data();
+  let data = {
+    ...val,
+    userResult: resArray,
+  };
+  // console.log(data,'dataa');
+  dispatch({
+    type: USER_DETAILS,
+    payload: data,
+  });
+
   return data;
+}catch(error){
+  toast.error(error)
+}
 };

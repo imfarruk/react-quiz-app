@@ -1,22 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Box, TextField, Grid, Container } from "@mui/material";
-import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
-import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import { BsPlusSquareFill } from "react-icons/bs";
 import { homeCenter } from "../constant/style";
-import { MdDelete } from "react-icons/md";
 import { BsFillSave2Fill } from "react-icons/bs";
-import { quiz } from "../constant/db";
-import { createQuizQuestion, getQuizById, updateQuiz } from "../store/actions/createQuiz";
-import { connect, useDispatch } from "react-redux";
+import { getQuizById, updateQuiz } from "../store/actions/createQuiz";
 import { toast } from "react-toastify";
-import FormHelperText from "@mui/material/FormHelperText";
-import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import { useNavigate, useParams } from "react-router-dom";
 
 const initialQuizValue = {
@@ -42,21 +32,17 @@ const EditQuizCard = () => {
   const { id } = useParams();
   const [option, setOption] = useState(false);
   const [errors, setErrors] = useState(initialError);
-  const [dbFile, setDbFile] = useState(quiz);
   const [submitting, setSubmitting] = useState(false);
   const [loading,setLoading] = useState(true)
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [quizValue, setQuizValue] = useState(initialQuizValue);
-  let valId;
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
-  console.log(id, "id");
+ 
 
   useEffect(() => {
     getQuizById(id).then((data) => {
-      console.log(data, "resultById");
       
       setQuizValue(data);
       setLoading(false);
@@ -83,26 +69,9 @@ const EditQuizCard = () => {
         toast.success(data);
         navigate('/create-quiz')
     })
-    // setSubmitting(true);
-    // const validationErrors = validateForm(quizValue);
-    // if (Object.keys(validationErrors).length === 0) {
-    //     const { subject, level, question, optionA, optionB, optionC, optionD, correctOption } = quizValue;
-    //         const datass = {
-    //             subject, level, question, optionA, optionB, optionC, optionD, correctOption
-    //         }
-    //        dispatch(createQuizQuestion(datass)).then(()=>{
-    //         setQuizValue({subject:"", level:"", question:"", optionA:"", optionB:"", optionC:"", optionD:"", correctOption:""})
-    //         toast.success('created successfully')
-    //         clearForm();
-    //     });
-    //   } else {
-    //     setErrors(validationErrors);
-    //     setSubmitting(false);
-    //   }
   };
 
   const validateForm = (data) => {
-    console.log(data, "daada");
     let errors = {};
     if (!data.subject.trim()) {
       setErrors({ ...errors }, (errors.subject = true));

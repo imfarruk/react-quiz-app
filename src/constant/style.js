@@ -10,3 +10,8 @@ export const homeCenter = {
     alignItems:'center',
     minHeight:"80vh",
 }
+export const centerBox = {
+    display:'flex',
+    justifyContent:'center',
+    alignItems:'center',
+}

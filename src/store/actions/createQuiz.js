@@ -25,25 +25,17 @@ const auth = getAuth(app);
 const firestore = getFirestore(app);
 
 export const createQuizQuestion = (data) => async (dispatch) => {
-  console.log("inside create quiz", data);
   addDoc(collection(firestore, dbName), data)
     .then((data) => {
-      console.log("resultResdata", data);
-      // dispatch({
-      //     type:CREATE_QUIZ,
-      //     payload:'Created successfully'
-      // })
       return data;
     })
     .catch((error) => {
       return error;
     });
-  //    console.log('resultRes',resultRes);
   //    return resultRes
 };
 
 export const readQuizQuestion = (sub, level) => async (dispatch) => {
-  console.log("data", sub);
   const collectionRef = collection(firestore, dbName);
   const q = query(
     collectionRef,
@@ -53,18 +45,14 @@ export const readQuizQuestion = (sub, level) => async (dispatch) => {
   const docRes = await getDocs(q);
   let resArray = [];
   docRes.forEach((data) => resArray.push(data));
-  console.log(resArray, "resArray", docRes, q);
   return resArray;
 };
 
 export const readSubjectWiseQuiz = (data) => async (dispatch) => {
-  console.log(data);
   let resArray = [];
   const querySnapshot = await getDocs(collection(firestore, dbName));
   querySnapshot.forEach((doc) => {
     resArray.push(doc.data());
-    // doc.data() is never undefined for query doc snapshots
-    // console.log(doc.id, " => ", doc.data());
     return resArray;
   });
 };
@@ -72,7 +60,6 @@ export const readSubjectWiseQuiz = (data) => async (dispatch) => {
 export const getQuizById = async (id) => {
   const docRef = doc(firestore, dbName, id);
   const result = await getDoc(docRef);
-  console.log(id, "id", result.data(), docRef);
   return result.data();
 };
 
@@ -102,17 +89,17 @@ export const quizSubjects = async () => {
 export const saveResultTodb = async () => {
   const text = localStorage.getItem("unsavedQuizResult");
   const data = JSON.parse(text);
+  if(data === null){
+    return false
+  }
   try {
     const result = await addDoc(
       collection(firestore, `${dbUser}/${auth?.currentUser.uid}/userResult`),
       data
     );
-    // const userRef = doc(firestore, dbUser, auth?.currentUser.uid);
-    // await setDoc(userRef, "userResult", data);
-    console.log(result, "result-savedb");
     localStorage.removeItem("unsavedQuizResult")
     return "Data saved";
   } catch (error) {
-    console.log(error);
+    toast.error(error.message);
   }
 };
